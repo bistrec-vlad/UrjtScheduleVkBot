@@ -1,9 +1,9 @@
 <?php
-require_once __DIR__ . "/BotApiClient.php";
+require_once __DIR__ . "/IBotApiClient.php";
 
 use VK\Client\VKApiClient;
 
-class VkBotApiClient implements BotApiClient
+class VkBotApiClient implements IBotApiClient
 {
     public string $token;
     public VKApiClient $apiClient;

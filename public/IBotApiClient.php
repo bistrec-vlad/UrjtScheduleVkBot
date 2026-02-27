@@ -1,6 +1,6 @@
 <?php
 
-interface BotApiClient
+interface IBotApiClient
 {
     public function sendMessage($chatId, $text);
 }
