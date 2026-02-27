@@ -1,11 +1,13 @@
 <?php
 require_once "vendor/autoload.php";
 require_once __DIR__ . "/../config/vkApi.php";
+require_once __DIR__ . "/VkBotApiClient.php";
 
 use VK\Client\VKApiClient;
 
 // Получаем данные
 $data = json_decode(file_get_contents("php://input"), true);
+// error_log(print_r($data, 1));
 
 if (!$data || !isset($data["type"])) {
     die("error");
@@ -16,17 +18,21 @@ if ($data["type"] == "confirmation") {
     die(CONFIRMATION);
 }
 
+if (isset($data["object"]["message"]["payload"])) {
+    $payload = json_decode($data["object"]["message"]["payload"], 1);
+
+    if ($payload["command"] == "start") {
+    }
+}
+
+$vkApiClient = new VKApiClient("5.199");
+$botApiClient = new VkBotApiClient($vkApiClient, TOKEN);
+
 // Обработка нового сообщения
 if ($data["type"] == "message_new") {
-    $vk = new VKApiClient("5.131");
     $message = $data["object"]["message"];
 
-    // Эхо-ответ
-    $vk->messages()->send(TOKEN, [
-        "peer_id" => $message["peer_id"],
-        "message" => "Эхо: " . $message["text"],
-        "random_id" => random_int(1, 1000000),
-    ]);
+    $botApiClient->sendMessage($message["peer_id"], $message["text"]);
 }
 
 echo "ok";
