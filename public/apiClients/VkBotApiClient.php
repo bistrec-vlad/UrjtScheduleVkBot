@@ -21,10 +21,6 @@ class VkBotApiClient implements IBotApiClient
         $exception = null;
 
         for ($attempt = 1; $attempt <= $retries; $attempt++) {
-            error_log(
-                "🔄 Попытка {$attempt}/{$retries} для пользователя {$chatId}",
-            );
-
             try {
                 $this->apiClient->messages()->send($this->token, [
                     "peer_id" => $chatId,
@@ -35,10 +31,6 @@ class VkBotApiClient implements IBotApiClient
                 return;
             } catch (Exception $e) {
                 $exception = $e;
-
-                error_log(
-                    "❌ Попытка {$attempt} не удалась: " . $e->getMessage(),
-                );
 
                 sleep(2 * $attempt);
             }

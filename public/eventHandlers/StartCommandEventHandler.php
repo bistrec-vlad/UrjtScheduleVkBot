@@ -59,10 +59,6 @@ class StartCommandEventHandler implements IEventHandler
                     ),
                 );
             }
-
-            error_log("ne ok");
-        } else {
-            error_log("ok");
         }
     }
 }
