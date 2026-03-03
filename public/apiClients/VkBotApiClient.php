@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . "/IBotApiClient.php";
 
+require_once __DIR__ . "/VkBotApiSendMessageException.php";
+
 use VK\Client\VKApiClient;
 
 class VkBotApiClient implements IBotApiClient
@@ -8,18 +10,43 @@ class VkBotApiClient implements IBotApiClient
     public string $token;
     public VKApiClient $apiClient;
 
-    public function __construct($vkApiClient, $token)
+    public function __construct(VKApiClient $vkApiClient, string $token)
     {
         $this->apiClient = $vkApiClient;
         $this->token = $token;
     }
 
-    public function sendMessage($chatId, $text)
+    public function sendMessage(int $chatId, string $text, int $retries)
     {
-        $this->apiClient->messages()->send($this->token, [
-            "peer_id" => $chatId,
-            "message" => $text,
-            "random_id" => random_int(1, 1000000),
-        ]);
+        $exception = null;
+
+        for ($attempt = 1; $attempt <= $retries; $attempt++) {
+            error_log(
+                "🔄 Попытка {$attempt}/{$retries} для пользователя {$chatId}",
+            );
+
+            try {
+                $this->apiClient->messages()->send($this->token, [
+                    "peer_id" => $chatId,
+                    "message" => $text,
+                    "random_id" => random_int(1, 1000000),
+                ]);
+
+                return;
+            } catch (Exception $e) {
+                $exception = $e;
+
+                error_log(
+                    "❌ Попытка {$attempt} не удалась: " . $e->getMessage(),
+                );
+
+                sleep(2 * $attempt);
+            }
+        }
+
+        throw new VkBotApiSendMessageException(
+            "Can't send message for user $chatId! Exception: " .
+                $exception->getMessage(),
+        );
     }
 }

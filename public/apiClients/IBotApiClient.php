@@ -2,5 +2,5 @@
 
 interface IBotApiClient
 {
-    public function sendMessage($chatId, $text);
+    public function sendMessage(int $chatId, string $text, int $retries);
 }

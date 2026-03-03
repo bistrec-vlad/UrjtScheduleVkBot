@@ -10,15 +10,18 @@ class VkBotRepository implements IBotRepository
     private $userRepo;
     private $subscriptionRepo;
     private $orderRepo;
+    private $logRepo;
 
     public function __construct(
         IUserRepository $userRepo,
         ISubscriptionRepository $subscriptionRepo,
         IOrderRepository $orderRepo,
+        ILogRepository $logRepo,
     ) {
         $this->userRepo = $userRepo;
         $this->subscriptionRepo = $subscriptionRepo;
         $this->orderRepo = $orderRepo;
+        $this->logRepo = $logRepo;
     }
 
     public function getUserRepository(): IUserRepository
@@ -34,5 +37,10 @@ class VkBotRepository implements IBotRepository
     public function getOrderRepository(): IOrderRepository
     {
         return $this->orderRepo;
+    }
+
+    public function getLogRepository(): ILogRepository
+    {
+        return $this->logRepo;
     }
 }
