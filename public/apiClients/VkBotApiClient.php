@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . "/../../config/botStrings.php";
+require_once __DIR__ . "/../../config/subscription.php";
 require_once __DIR__ . "/IBotApiClient.php";
 
 require_once __DIR__ . "/VkBotApiSendMessageException.php";

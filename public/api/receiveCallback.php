@@ -24,6 +24,15 @@ use VK\Client\VKApiClient;
 // Получаем данные
 $data = json_decode(file_get_contents("php://input"), true);
 
+if (!$data || !isset($data["type"])) {
+    die("error");
+}
+
+// Подтверждение сервера
+if ($data["type"] == "confirmation") {
+    die(CONFIRMATION);
+}
+
 $pdo = new PDO(SQL_DSN, SQL_USERNAME, SQL_PASSWORD);
 $botRepo = new VkBotRepository(
     new SqlUserRepository($pdo, SQL_USERS_TABLE_NAME),
@@ -59,23 +68,6 @@ if (isset($user)) {
                 ". Received callback",
         ),
     );
-}
-
-if (!$data || !isset($data["type"])) {
-    $logRepo->add(
-        new Log(
-            $user->getId(),
-            date(LOG_TIME_FORMAT),
-            LOG_FATAL_TYPE,
-            "Callback is null",
-        ),
-    );
-    die("error");
-}
-
-// Подтверждение сервера
-if ($data["type"] == "confirmation") {
-    die(CONFIRMATION);
 }
 
 // Регистрируем обработчики событий на каждое событие от VK

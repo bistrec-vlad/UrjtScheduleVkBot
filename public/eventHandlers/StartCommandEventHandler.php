@@ -46,13 +46,32 @@ class StartCommandEventHandler implements IEventHandler
             try {
                 $this->botApiClient->sendMessage(
                     $chatId,
-                    $text,
+                    SUCCESS_NOTIFICATION_ACTIVATION .
+                        "\n\nВаша бесплатная подписка длится до " .
+                        date("d.m.Y", strtotime($endDate)),
                     SEND_MESSAGE_RETRIES,
                 );
             } catch (IBotApiSendMessageException $e) {
                 $logsRepo->add(
                     new Log(
                         $userId,
+                        date(LOG_TIME_FORMAT),
+                        LOG_ERROR_TYPE,
+                        $e->getMessage(),
+                    ),
+                );
+            }
+        } else {
+            try {
+                $this->botApiClient->sendMessage(
+                    $chatId,
+                    FAIL_NOTIFICATION_ACTIVATION,
+                    SEND_MESSAGE_RETRIES,
+                );
+            } catch (IBotApiSendMessageException $e) {
+                $logsRepo->add(
+                    new Log(
+                        $user->getId(),
                         date(LOG_TIME_FORMAT),
                         LOG_ERROR_TYPE,
                         $e->getMessage(),
