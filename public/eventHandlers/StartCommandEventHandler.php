@@ -27,7 +27,6 @@ class StartCommandEventHandler implements IEventHandler
     {
         $message = $eventData["object"]["message"];
         $chatId = $message["from_id"];
-        $text = $message["text"];
 
         $userRepo = $this->botRepo->getUserRepository();
         $subscriptionRepo = $this->botRepo->getSubscriptionRepository();
