@@ -3,7 +3,7 @@ require_once __DIR__ . "/../../config/botStrings.php";
 require_once __DIR__ . "/../../config/subscription.php";
 require_once __DIR__ . "/IBotApiClient.php";
 
-require_once __DIR__ . "/VkBotApiSendMessageException.php";
+require_once __DIR__ . "/BotApiSendMessageException.php";
 
 use VK\Client\VKApiClient;
 
@@ -38,7 +38,7 @@ class VkBotApiClient implements IBotApiClient
             }
         }
 
-        throw new VkBotApiSendMessageException(
+        throw new BotApiSendMessageException(
             "Can't send message for user $chatId! Exception: " .
                 $exception->getMessage(),
         );

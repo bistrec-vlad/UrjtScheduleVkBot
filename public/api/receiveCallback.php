@@ -1,19 +1,18 @@
 <?php
-require_once __DIR__ . "/../vendor/autoload.php";
-
 require_once __DIR__ . "/../../config/vkApi.php";
 require_once __DIR__ . "/../../config/database.php";
 require_once __DIR__ . "/../../config/logs.php";
 
-require_once __DIR__ . "/../EventDispatcher.php";
+require_once __DIR__ . "/../vendor/autoload.php";
 
-require_once __DIR__ . "/../repositories/VkBotRepository.php";
+require_once __DIR__ . "/../EventDispatcher.php";
 
 require_once __DIR__ . "/../entities/Log.php";
 
 require_once __DIR__ . "/../eventHandlers/MessageNewEventHandler.php";
 require_once __DIR__ . "/../apiClients/VkBotApiClient.php";
 
+require_once __DIR__ . "/../repositories/VkBotRepository.php";
 require_once __DIR__ . "/../repositories/SqlUserRepository.php";
 require_once __DIR__ . "/../repositories/SqlSubscriptionRepository.php";
 require_once __DIR__ . "/../repositories/SqlOrderRepository.php";
@@ -33,6 +32,8 @@ if ($data["type"] == "confirmation") {
     die(CONFIRMATION);
 }
 
+echo "ok";
+
 $pdo = new PDO(SQL_DSN, SQL_USERNAME, SQL_PASSWORD);
 $botRepo = new VkBotRepository(
     new SqlUserRepository($pdo, SQL_USERS_TABLE_NAME),
@@ -48,27 +49,16 @@ $userRepo = $botRepo->getUserRepository();
 $user = $userRepo->findByChatId($data["object"]["message"]["from_id"]);
 $logRepo = $botRepo->getLogRepository();
 
-if (isset($user)) {
-    $logRepo->add(
-        new Log(
-            $user->getId(),
-            date(LOG_TIME_FORMAT),
-            LOG_INFO_TYPE,
-            "Start of programm. Received callback",
-        ),
-    );
-} else {
-    $logRepo->add(
-        new Log(
-            null,
-            date(LOG_TIME_FORMAT),
-            LOG_INFO_TYPE,
-            "Start of programm for user " .
-                $data["object"]["message"]["from_id"] .
-                ". Received callback",
-        ),
-    );
-}
+$logRepo->add(
+    new Log(
+        $user ? $user->getId() : null,
+        date(LOG_TIME_FORMAT),
+        LOG_INFO_TYPE,
+        "Start of programm for user " .
+            $data["object"]["message"]["from_id"] .
+            ". Received callback",
+    ),
+);
 
 // Регистрируем обработчики событий на каждое событие от VK
 $eventDispatcher = new EventDispatcher();
@@ -81,11 +71,9 @@ $eventDispatcher->dispatch($data);
 
 $logRepo->add(
     new Log(
-        $user->getId(),
+        $user ? $user->getId() : null,
         date(LOG_TIME_FORMAT),
         LOG_INFO_TYPE,
-        "End of programm",
+        "End of programm for user " . $data["object"]["message"]["from_id"],
     ),
 );
-
-echo "ok";
