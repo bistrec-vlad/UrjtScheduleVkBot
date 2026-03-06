@@ -1,9 +1,8 @@
 <?php
 require_once __DIR__ . "/../../config/subscription.php";
 require_once __DIR__ . "/../../config/botApi.php";
-require_once __DIR__ . "/../../config/logs.php";
 
-require_once __DIR__ . "/../entities/Log.php";
+require_once __DIR__ . "/../Logger.php";
 
 require_once __DIR__ . "/../repositories/IBotRepository.php";
 require_once __DIR__ . "/../apiClients/IBotApiClient.php";
@@ -16,13 +15,16 @@ class StartCommandEventHandler implements IEventHandler
 {
     private $botRepo;
     private $botApiClient;
+    private $logger;
 
     public function __construct(
         IBotRepository $botRepo,
         IBotApiClient $botApiClient,
+        Logger $logger,
     ) {
         $this->botRepo = $botRepo;
         $this->botApiClient = $botApiClient;
+        $this->logger = $logger;
     }
 
     public function handle($eventData)
@@ -31,7 +33,6 @@ class StartCommandEventHandler implements IEventHandler
         $chatId = $message["from_id"];
 
         $subscriptionRepo = $this->botRepo->getSubscriptionRepository();
-        $logsRepo = $this->botRepo->getLogRepository();
 
         $user = null;
 
@@ -53,14 +54,7 @@ class StartCommandEventHandler implements IEventHandler
                 SEND_MESSAGE_RETRIES,
             );
         } catch (BotApiSendMessageException $e) {
-            $logsRepo->add(
-                new Log(
-                    $user->getId() ?? null,
-                    date(LOG_TIME_FORMAT),
-                    LOG_ERROR_TYPE,
-                    $e->getMessage(),
-                ),
-            );
+            $this->logger->logError($user->getId() ?? null, $e->getMessage());
         }
     }
 }

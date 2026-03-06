@@ -1,22 +1,25 @@
 <?php
-
-require_once __DIR__ . "/IEventHandler.php";
+require_once __DIR__ . "/../Logger.php";
 require_once __DIR__ . "/StartCommandEventHandler.php";
 
 require_once __DIR__ . "/../repositories/IBotRepository.php";
 require_once __DIR__ . "/../apiClients/IBotApiClient.php";
+require_once __DIR__ . "/IEventHandler.php";
 
 class MessageNewEventHandler implements IEventHandler
 {
     private $botRepo;
     private $botApiClient;
+    private $logger;
 
     public function __construct(
         IBotRepository $botRepo,
         IBotApiClient $botApiClient,
+        Logger $logger,
     ) {
         $this->botRepo = $botRepo;
         $this->botApiClient = $botApiClient;
+        $this->logger = $logger;
     }
 
     public function handle($eventData)
@@ -35,6 +38,7 @@ class MessageNewEventHandler implements IEventHandler
                     $handler = new StartCommandEventHandler(
                         $this->botRepo,
                         $this->botApiClient,
+                        $this->logger,
                     );
                 }
 
