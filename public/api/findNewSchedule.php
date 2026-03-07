@@ -155,7 +155,8 @@ foreach ($newScheduleFiles as $file) {
             $botApiClient->sendDocument(
                 $user->getChatId(),
                 $attachment,
-                SCHEDULE_FILE_CHANGED_MESSAGE,
+                SCHEDULE_FILE_CHANGED_MESSAGE .
+                    "\n\nСсылка на файл: {$file->getUrl()}",
                 SEND_DOCUMENT_RETRIES,
             );
         } catch (BotApiSendDocumentException $e) {
