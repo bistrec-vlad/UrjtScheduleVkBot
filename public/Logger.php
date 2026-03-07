@@ -18,6 +18,11 @@ class Logger
         $this->logMessage($userId, LOG_ERROR_TYPE, $messageText);
     }
 
+    public function logWarn(int|null $userId, $messageText)
+    {
+        $this->logMessage($userId, LOG_WARN_TYPE, $messageText);
+    }
+
     public function logInfo(int|null $userId, string $messageText)
     {
         $this->logMessage($userId, LOG_INFO_TYPE, $messageText);

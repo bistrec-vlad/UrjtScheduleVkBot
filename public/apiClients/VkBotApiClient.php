@@ -43,4 +43,35 @@ class VkBotApiClient implements IBotApiClient
                 $exception->getMessage(),
         );
     }
+
+    public function sendDocument(
+        int $chatId,
+        string $attachment,
+        string $text,
+        int $retries,
+    ) {
+        $exception = null;
+
+        for ($attempt = 1; $attempt <= $retries; $attempt++) {
+            try {
+                $this->apiClient->messages()->send($this->token, [
+                    "peer_id" => $chatId,
+                    "message" => $text,
+                    "attachment" => $attachment,
+                    "random_id" => random_int(1, 1000000),
+                ]);
+
+                return;
+            } catch (Exception $e) {
+                $exception = $e;
+
+                sleep(2 * $attempt);
+            }
+        }
+
+        throw new BotApiSendDocumentException(
+            "Can't send document $attachment for user $chatId! Exception: " .
+                $exception->getMessage(),
+        );
+    }
 }

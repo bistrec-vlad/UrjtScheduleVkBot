@@ -15,17 +15,20 @@ class VkBotRepository implements IBotRepository
     private $subscriptionRepo;
     private $orderRepo;
     private $logRepo;
+    private $scheduleFileRepo;
 
     public function __construct(
         IUserRepository $userRepo,
         ISubscriptionRepository $subscriptionRepo,
         IOrderRepository $orderRepo,
         ILogRepository $logRepo,
+        IScheduleFileRepository $scheduleFileRepo,
     ) {
         $this->userRepo = $userRepo;
         $this->subscriptionRepo = $subscriptionRepo;
         $this->orderRepo = $orderRepo;
         $this->logRepo = $logRepo;
+        $this->scheduleFileRepo = $scheduleFileRepo;
     }
 
     public function addUserWithTrialSubscription(int $chatId): User
@@ -64,5 +67,10 @@ class VkBotRepository implements IBotRepository
     public function getLogRepository(): ILogRepository
     {
         return $this->logRepo;
+    }
+
+    public function getScheduleFileRepository(): IScheduleFileRepository
+    {
+        return $this->scheduleFileRepo;
     }
 }

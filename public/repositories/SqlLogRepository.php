@@ -1,7 +1,7 @@
 <?php
 
-require_once __DIR__ . "/IUserRepository.php";
 require_once __DIR__ . "/../entities/Log.php";
+require_once __DIR__ . "/ILogRepository.php";
 
 final class SqlLogRepository implements ILogRepository
 {

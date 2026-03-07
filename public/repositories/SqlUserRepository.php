@@ -1,7 +1,7 @@
 <?php
 
-require_once __DIR__ . "/IUserRepository.php";
 require_once __DIR__ . "/../entities/User.php";
+require_once __DIR__ . "/IUserRepository.php";
 
 final class SqlUserRepository implements IUserRepository
 {

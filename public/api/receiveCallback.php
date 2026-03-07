@@ -15,6 +15,7 @@ require_once __DIR__ . "/../repositories/SqlUserRepository.php";
 require_once __DIR__ . "/../repositories/SqlSubscriptionRepository.php";
 require_once __DIR__ . "/../repositories/SqlOrderRepository.php";
 require_once __DIR__ . "/../repositories/SqlLogRepository.php";
+require_once __DIR__ . "/../repositories/SqlScheduleFileRepository.php";
 
 use VK\Client\VKApiClient;
 
@@ -38,6 +39,7 @@ $botRepo = new VkBotRepository(
     new SqlSubscriptionRepository($pdo, SQL_SUBSCRIPTIONS_TABLE_NAME),
     new SqlOrderRepository($pdo, SQL_ORDERS_TABLE_NAME),
     new SqlLogRepository($pdo, SQL_LOGS_TABLE_NAME),
+    new SqlScheduleFileRepository($pdo, SQL_SCHEDULE_FILES_TABLE_NAME),
 );
 
 $vkApiClient = new VKApiClient(API_VERSION);
