@@ -9,4 +9,18 @@ interface IBotApiClient
         string $text,
         int $retries,
     );
+    public function sendKeyboardMessage(
+        int $chatId,
+        string $text,
+        string $jsonKeyboard,
+        int $retries,
+    );
+
+    public function editKeyboardMessage(
+        int $chatId,
+        int $messageId,
+        string $text,
+        string $jsonKeyboard,
+        int $retries,
+    );
 }

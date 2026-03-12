@@ -8,6 +8,7 @@ require_once __DIR__ . "/../vendor/autoload.php";
 require_once __DIR__ . "/../EventDispatcher.php";
 
 require_once __DIR__ . "/../eventHandlers/MessageNewEventHandler.php";
+require_once __DIR__ . "/../eventHandlers/MessageEventEventHandler.php";
 require_once __DIR__ . "/../apiClients/VkBotApiClient.php";
 
 require_once __DIR__ . "/../repositories/VkBotRepository.php";
@@ -45,16 +46,23 @@ $botRepo = new VkBotRepository(
 $vkApiClient = new VKApiClient(API_VERSION);
 $botApiClient = new VkBotApiClient($vkApiClient, TOKEN);
 
+$chatId = 0;
+if ($data["type"] == "message_new") {
+    $chatId = $data["object"]["message"]["from_id"];
+} elseif ($data["type"] == "message_event") {
+    $chatId = $data["object"]["user_id"];
+}
+
 $userRepo = $botRepo->getUserRepository();
-$user = $userRepo->findByChatId($data["object"]["message"]["from_id"]);
+$user = $userRepo->findByChatId($chatId);
 $logRepo = $botRepo->getLogRepository();
 $logger = new Logger($logRepo);
 
 $logger->logInfo(
-    $user ? $user->getId() : null,
-    "Start of programm for user " .
-        $data["object"]["message"]["from_id"] .
-        ". Received callback",
+    null,
+    "Start of programm for user " . isset($user)
+        ? $user->getId()
+        : null . ". Received callback",
 );
 
 // Регистрируем обработчики событий на каждое событие от VK
@@ -63,10 +71,14 @@ $eventDispatcher->registerHandler(
     "message_new",
     new MessageNewEventHandler($botRepo, $botApiClient, $logger),
 );
+$eventDispatcher->registerHandler(
+    "message_event",
+    new MessageEventEventHandler($botRepo, $botApiClient, $logger),
+);
 
 $eventDispatcher->dispatch($data);
 
 $logger->logInfo(
-    $user ? $user->getId() : null,
-    "End of programm for user " . $data["object"]["message"]["from_id"],
+    isset($user) ? $user->getId() : null,
+    "End of programm for user " . $chatId,
 );
