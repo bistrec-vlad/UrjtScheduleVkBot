@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . "/../../config/vkApi.php";
 require_once __DIR__ . "/../../config/database.php";
+require_once __DIR__ . "/../../config/botStrings.php";
 
 require_once __DIR__ . "/../vendor/autoload.php";
 
@@ -58,7 +59,7 @@ foreach ($needingRenewalSubscriptions as $sub) {
 
     $botApiClient->sendKeyboardMessage(
         $user->getChatId(),
-        "Нужно оплатить подписку чел",
+        NEEDING_RENEWAL_MESSAGE,
         json_encode($keyboard->getKeyboard()),
         3,
     );
