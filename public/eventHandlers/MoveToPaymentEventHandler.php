@@ -3,6 +3,8 @@ require_once __DIR__ . "/../../config/botStrings.php";
 require_once __DIR__ . "/../../config/payment.php";
 require_once __DIR__ . "/../../config/botApi.php";
 
+require_once __DIR__ . "/../entities/VkInlineKeyboard.php";
+require_once __DIR__ . "/../entities/VkInlineButton.php";
 require_once __DIR__ . "/../Logger.php";
 
 require_once __DIR__ . "/../repositories/IBotRepository.php";
@@ -50,62 +52,46 @@ class MoveToPaymentEventHandler implements IEventHandler
 
     private function getPaymentKeyboard(): string
     {
-        return json_encode([
-            "inline" => true,
-            "buttons" => [
-                [
-                    [
-                        "action" => [
-                            "type" => "callback",
-                            "payload" => json_encode(
-                                ["button" => "paymentType1"],
-                                JSON_UNESCAPED_UNICODE,
-                            ),
-                            "label" =>
-                                "1 мес. - " .
-                                (int) PAYMENT_TYPE_1_AMOUNT_VALUE .
-                                " р.",
-                        ],
-                        "color" => "secondary",
-                    ],
-                ],
-                [
-                    [
-                        "action" => [
-                            "type" => "callback",
-                            "payload" => json_encode(
-                                ["button" => "paymentType2"],
-                                JSON_UNESCAPED_UNICODE,
-                            ),
-                            "label" =>
-                                "3 мес. - " .
-                                (int) PAYMENT_TYPE_2_AMOUNT_VALUE .
-                                " р. (" .
-                                (int) (PAYMENT_TYPE_2_AMOUNT_VALUE / 3) .
-                                " р. в мес.)",
-                        ],
-                        "color" => "primary",
-                    ],
-                ],
-                [
-                    [
-                        "action" => [
-                            "type" => "callback",
-                            "payload" => json_encode(
-                                ["button" => "paymentType3"],
-                                JSON_UNESCAPED_UNICODE,
-                            ),
-                            "label" =>
-                                "1 год. - " .
-                                (int) PAYMENT_TYPE_3_AMOUNT_VALUE .
-                                " р. (" .
-                                (int) (PAYMENT_TYPE_3_AMOUNT_VALUE / 12) .
-                                "р. в мес.)",
-                        ],
-                        "color" => "secondary",
-                    ],
-                ],
-            ],
+        $keyboard = new VkInlineKeyboard();
+
+        $keyboard->addRow([
+            new VkInlineButton(
+                "1 мес. - " . (int) PAYMENT_TYPE_1_AMOUNT_VALUE . " р.",
+                json_encode(
+                    ["button" => "paymentType1"],
+                    JSON_UNESCAPED_UNICODE,
+                ),
+            ),
         ]);
+
+        $keyboard->addRow([
+            new VkInlineButton(
+                "3 мес. - " .
+                    (int) PAYMENT_TYPE_2_AMOUNT_VALUE .
+                    " р. (" .
+                    (int) (PAYMENT_TYPE_2_AMOUNT_VALUE / 3) .
+                    " р. в мес.)",
+                json_encode(
+                    ["button" => "paymentType2"],
+                    JSON_UNESCAPED_UNICODE,
+                ),
+            ),
+        ]);
+
+        $keyboard->addRow([
+            new VkInlineButton(
+                "1 год. - " .
+                    (int) PAYMENT_TYPE_3_AMOUNT_VALUE .
+                    " р. (" .
+                    (int) (PAYMENT_TYPE_3_AMOUNT_VALUE / 12) .
+                    "р. в мес.)",
+                json_encode(
+                    ["button" => "paymentType3"],
+                    JSON_UNESCAPED_UNICODE,
+                ),
+            ),
+        ]);
+
+        return json_encode($keyboard->getKeyboard());
     }
 }

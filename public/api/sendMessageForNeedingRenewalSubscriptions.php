@@ -11,6 +11,8 @@ require_once __DIR__ . "/../repositories/SqlSubscriptionRepository.php";
 require_once __DIR__ . "/../repositories/SqlOrderRepository.php";
 require_once __DIR__ . "/../repositories/SqlLogRepository.php";
 require_once __DIR__ . "/../repositories/SqlScheduleFileRepository.php";
+require_once __DIR__ . "/../entities/VkInlineKeyboard.php";
+require_once __DIR__ . "/../entities/VkInlineButton.php";
 require_once __DIR__ . "/../Logger.php";
 
 use VK\Client\VKApiClient;
@@ -38,24 +40,14 @@ if (!isset($needingRenewalSubscriptions)) {
     exit(0);
 }
 
-$keyboard = [
-    "inline" => true,
-    "buttons" => [
-        [
-            [
-                "action" => [
-                    "type" => "callback",
-                    "payload" => json_encode(
-                        ["button" => "moveToPayment"],
-                        JSON_UNESCAPED_UNICODE,
-                    ),
-                    "label" => "➡️ Перейти к оплате",
-                ],
-                "color" => "primary",
-            ],
-        ],
-    ],
-];
+$keyboard = new VkInlineKeyboard();
+$keyboard->addRow([
+    new VkInlineButton(
+        "➡️ Перейти к оплате",
+        json_encode(["button" => "moveToPayment"], JSON_UNESCAPED_UNICODE),
+        "primary",
+    ),
+]);
 
 foreach ($needingRenewalSubscriptions as $sub) {
     if ($sub->isNoneType() || $sub->isUnlimitedType()) {
@@ -67,7 +59,7 @@ foreach ($needingRenewalSubscriptions as $sub) {
     $botApiClient->sendKeyboardMessage(
         $user->getChatId(),
         "Нужно оплатить подписку чел",
-        json_encode($keyboard),
+        json_encode($keyboard->getKeyboard()),
         3,
     );
 
